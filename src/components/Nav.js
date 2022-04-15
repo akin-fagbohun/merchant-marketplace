@@ -3,10 +3,13 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
-const Nav = () => {
+const Nav = (props) => {
+  // states
   const [allUsers, setAllUsers] = useState([]); // state needs to move to App
-  const [loggedIn, setLoggedIn] = useState(null); // state needs to move to App
   const [isLoading, setIsLoading] = useState(true);
+
+  // props
+  const { loggedIn, setLoggedIn } = props;
 
   useEffect(() => {
     axios

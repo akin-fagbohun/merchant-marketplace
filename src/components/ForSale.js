@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
-const ForSale = () => {
+const ForSale = (props) => {
   const [forSale, setForSale] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [currentCategory, setCurrentCategory] = useState(null);
+  const [cartItem, setCartItem] = useState(null);
+
+  // props
+  const { loggedIn } = props;
 
   useEffect(() => {
     fetch('https://merchant-marketplace.herokuapp.com/api/items')
@@ -42,6 +46,14 @@ const ForSale = () => {
     }
   }, [currentCategory]);
 
+  useEffect(() => {
+    if (cartItem !== null) {
+      axios.post(`https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/basket`, {
+        item_id: `${cartItem}`,
+      });
+    }
+  }, [cartItem, loggedIn]);
+
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -58,6 +70,10 @@ const ForSale = () => {
     //     console.log(items, '<< destructured items');
     //     setCategories(items);
     //   });
+  };
+
+  const handleAddToCart = (item_id) => {
+    setCartItem(item_id);
   };
 
   return (
@@ -85,11 +101,15 @@ const ForSale = () => {
         <ul>
           {forSale.map((item) => {
             return (
-              <li key={uuidv4}>
+              <li id={item.item_id} key={item.item_id}>
                 <img src={item.img_url} alt={item.item_name}></img>
                 <h3>{item.item_name}</h3>
                 <p>{item.item_description}</p>
                 <p>£{item.price}.00</p>
+                <button value={item.item_id} onClick={() => handleAddToCart(item.item_id)}>
+                  Add to Basket
+                </button>
+                <button>Buy Now</button>
               </li>
             );
           })}
