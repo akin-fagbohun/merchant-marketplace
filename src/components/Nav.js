@@ -50,7 +50,8 @@ const Nav = (props) => {
               </option>
             );
           })}
-        </select>
+        </select>{' '}
+        | <Link to="/myaccount">My Account</Link>
       </nav>
     );
   }

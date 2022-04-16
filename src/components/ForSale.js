@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
 const ForSale = (props) => {
+  // States
   const [forSale, setForSale] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState('');
@@ -13,6 +14,9 @@ const ForSale = (props) => {
   // props
   const { loggedIn } = props;
 
+  // Effects
+
+  // Gets all items for sale > Gets all categories > Sets some state
   useEffect(() => {
     fetch('https://merchant-marketplace.herokuapp.com/api/items')
       .then((response) => response.json())
@@ -32,6 +36,7 @@ const ForSale = (props) => {
       });
   }, []);
 
+  // filters For Sale items by category
   useEffect(() => {
     if (currentCategory !== null) {
       axios
@@ -46,6 +51,7 @@ const ForSale = (props) => {
     }
   }, [currentCategory]);
 
+  // Adds item to basket
   useEffect(() => {
     if (cartItem !== null) {
       axios.post(`https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/basket`, {
@@ -54,27 +60,22 @@ const ForSale = (props) => {
     }
   }, [cartItem, loggedIn]);
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
+  // Helper functions
 
+  // handles sorting event
   const handleSorting = (event) => {
-    // event.preventDefault();
-    // setIsLoading(true);
     console.log(event, '<<< original event');
     setCurrentCategory(event);
-    // axios
-    //   .get(`https://merchant-marketplace.herokuapp.com/api/items?category_name=${event}`)
-    //   .then((response) => {
-    //     const { items } = response.data;
-    //     console.log(items, '<< destructured items');
-    //     setCategories(items);
-    //   });
   };
 
+  // handles add to cart button click
   const handleAddToCart = (item_id) => {
     setCartItem(item_id);
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <main className="for-sale">

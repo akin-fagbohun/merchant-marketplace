@@ -9,6 +9,9 @@ const Basket = (props) => {
   // props
   const { loggedIn } = props;
 
+  // Effects
+
+  // Gets all items in user's basket
   useEffect(() => {
     if (loggedIn) {
       axios
@@ -28,14 +31,34 @@ const Basket = (props) => {
         })
         .then((res) => {
           const { item } = res.data;
-          console.log(res);
+          return item;
+        })
+        .then((item) => {
+          console.log(item);
+          axios.delete(
+            `https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/basket/${item.item_id}`
+          );
+          const newBasket = [...basketItems].splice(basketItems.indexOf(item, 1));
+          setBasketItems(newBasket);
           alert(`You putchased ${item.item_name}`);
         });
     }
-  }, [loggedIn, newOrder]);
+  }, [loggedIn, newOrder]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Helper functions
+
+  // Processes button click to purchase item
   const handlePurchase = (item_id) => {
     setNewOrder(item_id);
+  };
+
+  // Processes button click to remove item from basket
+  const handleRemoval = (item) => {
+    axios.delete(
+      `https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/basket/${item.item_id}`
+    );
+    const newBasket = [...basketItems].splice(basketItems.indexOf(item, 1));
+    setBasketItems(newBasket);
   };
 
   return (
@@ -51,7 +74,9 @@ const Basket = (props) => {
             <button value={item.item_id} onClick={() => handlePurchase(item.item_id)}>
               Complete Sale
             </button>
-            <button>Remove</button>
+            <button value={item} onClick={() => handleRemoval(item)}>
+              Remove
+            </button>
           </li>
         );
       })}
