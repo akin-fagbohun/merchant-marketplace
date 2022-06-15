@@ -16,9 +16,16 @@ export const getUserData = (loggedIn) => {
 };
 
 export const getItems = () => {
-  return marketplaceApi.get('/items').then((data) => {
-    return data;
+  return marketplaceApi.get('/items').then((res) => {
+    const { data } = res;
+    return data.items;
   });
+};
+
+export const postItem = (item) => {
+  console.log('🚀 ~ file: api.js ~ line 26 ~ postItem ~ item', item);
+
+  return marketplaceApi.post('/items', item).then((res) => res);
 };
 
 export const getCategories = () => {

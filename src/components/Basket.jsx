@@ -31,7 +31,6 @@ const Basket = () => {
           return item;
         })
         .then((item) => {
-          console.log(item, '<< in useEffect');
           deleteCartItem(loggedIn, item);
 
           const newBasket = [...basketItems].splice(basketItems.indexOf(item, 1));

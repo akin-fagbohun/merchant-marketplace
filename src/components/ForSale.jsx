@@ -20,12 +20,11 @@ const ForSale = () => {
   useEffect(() => {
     getItems()
       .then((res) => {
-        setForSale(res.data.items);
+        setForSale(res);
       })
       .then(() => {
         getCategories().then((categories) => {
           const categoryNames = categories.map((category) => category.category_name);
-          console.log(categoryNames);
           setFilterCategories(categoryNames);
           setIsLoading(false);
         });
@@ -37,7 +36,6 @@ const ForSale = () => {
     if (currentCategory !== null) {
       getCurrentCategory(currentCategory).then((data) => {
         const { items } = data;
-        console.log(items, '<< destructured items');
         setForSale(items);
       });
     }
@@ -50,17 +48,14 @@ const ForSale = () => {
     }
   }, [cartItem, loggedIn]);
 
-  // Helper functions
-
   // handles sorting event
   const handleSorting = (event) => {
-    console.log(event, '<<< original event');
     setCurrentCategory(event);
   };
 
   // handles add to cart button click
   const handleAddToCart = (item_id) => {
-    setCartItem(item_id);
+    loggedIn ? setCartItem(item_id) : alert('Please log in to make a purchase.');
   };
 
   if (isLoading) {
