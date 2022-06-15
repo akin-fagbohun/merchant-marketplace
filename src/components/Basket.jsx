@@ -1,43 +1,39 @@
-import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../contexts/Users';
+import { getBasketItems, postNewOrder, deleteCartItem } from '../utils/api';
 
-const Basket = (props) => {
+const Basket = () => {
+  // React Global Contexts
+  const { loggedIn } = useContext(UserContext);
+
   // States
   const [basketItems, setBasketItems] = useState([]);
   const [newOrder, setNewOrder] = useState(null);
-
-  // props
-  const { loggedIn } = props;
 
   // Effects
 
   // Gets all items in user's basket
   useEffect(() => {
     if (loggedIn) {
-      axios
-        .get(`https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/basket`)
-        .then((res) => {
-          const { items } = res.data;
-          setBasketItems(items);
-        });
+      getBasketItems(loggedIn).then((res) => {
+        const { items } = res.data;
+        setBasketItems(items);
+      });
     }
   }, [basketItems, loggedIn]);
 
   useEffect(() => {
     if (newOrder !== null) {
-      axios
-        .post(`https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/orders`, {
-          item_id: `${newOrder}`,
-        })
+      postNewOrder(loggedIn, newOrder)
         .then((res) => {
+          console.log('inside');
           const { item } = res.data;
           return item;
         })
         .then((item) => {
-          console.log(item);
-          axios.delete(
-            `https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/basket/${item.item_id}`
-          );
+          console.log(item, '<< in useEffect');
+          deleteCartItem(loggedIn, item);
+
           const newBasket = [...basketItems].splice(basketItems.indexOf(item, 1));
           setBasketItems(newBasket);
           alert(`You putchased ${item.item_name}`);
@@ -54,9 +50,8 @@ const Basket = (props) => {
 
   // Processes button click to remove item from basket
   const handleRemoval = (item) => {
-    axios.delete(
-      `https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/basket/${item.item_id}`
-    );
+    deleteCartItem(loggedIn, item);
+
     const newBasket = [...basketItems].splice(basketItems.indexOf(item, 1));
     setBasketItems(newBasket);
   };

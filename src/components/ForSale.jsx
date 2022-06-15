@@ -1,62 +1,52 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import axios from 'axios';
+import { UserContext } from '../contexts/Users';
+import { getItems, getCategories, getCurrentCategory, postCartItem } from '../utils/api';
 
-const ForSale = (props) => {
+const ForSale = () => {
+  // React (Global) Contexts
+  const { loggedIn } = useContext(UserContext);
+
   // States
   const [forSale, setForSale] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [categories, setCategories] = useState('');
-  const [filterCategory, setFilterCategory] = useState('');
+  const [filterCategories, setFilterCategories] = useState([]);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [cartItem, setCartItem] = useState(null);
-
-  // props
-  const { loggedIn } = props;
 
   // Effects
 
   // Gets all items for sale > Gets all categories > Sets some state
   useEffect(() => {
-    fetch('https://merchant-marketplace.herokuapp.com/api/items')
-      .then((response) => response.json())
-      .then((data) => {
-        setForSale(data.items);
+    getItems()
+      .then((res) => {
+        setForSale(res.data.items);
       })
       .then(() => {
-        fetch('https://merchant-marketplace.herokuapp.com/api/categories')
-          .then((response) => response.json())
-          .then((categoryResponse) => {
-            const { categories } = categoryResponse;
-
-            setCategories(categories);
-            setFilterCategory(categories);
-            setIsLoading(false);
-          });
+        getCategories().then((categories) => {
+          const categoryNames = categories.map((category) => category.category_name);
+          console.log(categoryNames);
+          setFilterCategories(categoryNames);
+          setIsLoading(false);
+        });
       });
   }, []);
 
   // filters For Sale items by category
   useEffect(() => {
     if (currentCategory !== null) {
-      axios
-        .get(
-          `https://merchant-marketplace.herokuapp.com/api/items?category_name=${currentCategory}`
-        )
-        .then((response) => {
-          const { items } = response.data;
-          console.log(items, '<< destructured items');
-          setForSale(items);
-        });
+      getCurrentCategory(currentCategory).then((data) => {
+        const { items } = data;
+        console.log(items, '<< destructured items');
+        setForSale(items);
+      });
     }
   }, [currentCategory]);
 
   // Adds item to basket
   useEffect(() => {
     if (cartItem !== null) {
-      axios.post(`https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}/basket`, {
-        item_id: `${cartItem}`,
-      });
+      postCartItem(loggedIn, cartItem);
     }
   }, [cartItem, loggedIn]);
 
@@ -88,16 +78,17 @@ const ForSale = (props) => {
             onChange={(event) => handleSorting(event.target.value)}
           >
             <option value=""></option>
-            {filterCategory.map((category) => {
+            {filterCategories.map((category) => {
               return (
-                <option key={uuidv4} value={category.category_name}>
-                  {category.category_name}
+                <option key={uuidv4} value={category}>
+                  {category}
                 </option>
               );
             })}
           </select>
         </label>
       </form>
+
       <section>
         <ul>
           {forSale.map((item) => {

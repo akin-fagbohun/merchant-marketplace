@@ -1,29 +1,22 @@
-import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../contexts/Users';
+import { getUserData } from '../utils/api';
 
-const MyAccount = (props) => {
+const MyAccount = () => {
+  // React Global Contexts
+  const { loggedIn } = useContext(UserContext);
+
   // State
   const [user, setUser] = useState([]);
-
-  // Props
-  const { loggedIn } = props;
 
   // Effects
 
   useEffect(() => {
-    axios.get(`https://merchant-marketplace.herokuapp.com/api/users/${loggedIn}`).then((res) => {
-      const { user } = res.data;
+    getUserData(loggedIn).then((user) => {
       setUser(user);
     });
   }, [loggedIn]);
-
-  // Helper funtions
-
-  // Processes button to get user order history
-  // const handleOrderHistory = (username) => {
-  //   console.log(username);
-  // };
 
   return (
     <main>

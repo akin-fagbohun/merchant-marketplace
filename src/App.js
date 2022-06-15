@@ -1,6 +1,6 @@
 import './App.css';
-import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
+// import { Typography, AppBar, Card, CardActions, CardContent, CardMedia, CssBaseline, Container, Grid, Toolbar } from '@mui/material'
 
 // Components
 import Nav from './components/Nav';
@@ -12,19 +12,19 @@ import MyAccount from './components/MyAccount';
 import OrderHistory from './components/OrderHistory';
 
 function App() {
-  // const [allUsers, setAllUsers] = useState([]);
-  const [loggedIn, setLoggedIn] = useState(null);
+  // // const [allUsers, setAllUsers] = useState([]);
+  // const [loggedIn, setLoggedIn] = useState(null);
 
   return (
     <div className="App">
-      <Nav loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+      <Nav />
       <Routes>
-        <Route path="/" element={<Home loggedIn={loggedIn} />} />
-        <Route path="/for-sale" element={<ForSale loggedIn={loggedIn} />} />
-        <Route path="/selling" element={<Sell loggedIn={loggedIn} setLoggedIn={setLoggedIn} />} />
-        <Route path="/basket" element={<Basket loggedIn={loggedIn} />} />
-        <Route path="/myaccount" element={<MyAccount loggedIn={loggedIn} />} />
-        <Route path="/orderhistory" element={<OrderHistory loggedIn={loggedIn} />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/for-sale" element={<ForSale />} />
+        <Route path="/selling" element={<Sell />} />
+        <Route path="/basket" element={<Basket />} />
+        <Route path="/myaccount" element={<MyAccount />} />
+        <Route path="/orderhistory" element={<OrderHistory />} />
       </Routes>
     </div>
   );

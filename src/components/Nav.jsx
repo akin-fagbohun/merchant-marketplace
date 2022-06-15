@@ -1,19 +1,20 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect, useContext } from 'react';
+// import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { UserContext } from '../contexts/Users';
+import { getUsers } from '../utils/api';
 
-const Nav = (props) => {
+const Nav = () => {
+  // React Global Contexts
+  const { loggedIn, setLoggedIn } = useContext(UserContext);
+
   // states
   const [allUsers, setAllUsers] = useState([]); // state needs to move to App
   const [isLoading, setIsLoading] = useState(true);
 
-  // props
-  const { loggedIn, setLoggedIn } = props;
-
   useEffect(() => {
-    axios
-      .get('https://merchant-marketplace.herokuapp.com/api/users')
+    getUsers()
       .then((res) => {
         const { users } = res.data; // array of user objects
         const usernames = users.map((user) => {
